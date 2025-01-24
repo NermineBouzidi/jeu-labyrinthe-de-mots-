@@ -12,6 +12,8 @@ public class GamePanel extends JPanel implements Runnable{
    public static final int screenWidth= tileSize*maxScreenWidth;
    public  static final int screenHeight= tileSize*maxScreenHeight;
    //public KeyHandler keyH= new KeyHandler();
+
+    Sound sound = new Sound();
     Thread gameThread;
    // Player player = new Player(this,keyH);
     ScreenUI screenUI=new ScreenUI(this);
@@ -112,6 +114,8 @@ public class GamePanel extends JPanel implements Runnable{
             case START:
                //// drawStartScreen(g2);
                 screenUI.drawTitleScreen(g2);
+                playSE(1);
+
                 break;
             case PLAYER_SELECTION:
                // drawPlayerSelectionScreen(g2);
@@ -145,5 +149,18 @@ public class GamePanel extends JPanel implements Runnable{
 
     public void setCurrentState(GameState gameState) {
         this.currentState=gameState;
+    }
+    public void playMusic(int i ){
+        sound.setFile(i);
+        sound.play();
+        sound.loop();
+    }
+    public void stopMusic(int i ){
+        sound.stop();
+    }
+    public void playSE(int i ){
+        sound.setFile(i);
+        sound.play();
+
     }
 }

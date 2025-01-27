@@ -14,6 +14,8 @@ public class GamePanel extends JPanel implements Runnable{
    //public KeyHandler keyH= new KeyHandler();
 
     Sound sound = new Sound();
+    private boolean startSoundPlayed = false;
+
     Thread gameThread;
    // Player player = new Player(this,keyH);
     ScreenUI screenUI=new ScreenUI(this);
@@ -25,7 +27,7 @@ public class GamePanel extends JPanel implements Runnable{
 
     public GamePanel(){
         this.setPreferredSize(new Dimension(screenWidth,screenHeight));
-        this.setBackground(Color.blue);
+        this.setBackground(Color.darkGray);
         this.setDoubleBuffered(true);
         //this.addKeyListener(keyH);
         this.setFocusable(true);
@@ -114,8 +116,10 @@ public class GamePanel extends JPanel implements Runnable{
             case START:
                //// drawStartScreen(g2);
                 screenUI.drawTitleScreen(g2);
-                playSE(1);
-
+                if (!startSoundPlayed) {
+                   // playSE(1);
+                    startSoundPlayed = true; // Mark the sound as played
+                }
                 break;
             case PLAYER_SELECTION:
                // drawPlayerSelectionScreen(g2);

@@ -2,30 +2,33 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
 
 public class Labyrinth  {
-    public static final int NODE_SIZE = 36; // Size of each node (grid cell)
-    private static final int LABYRINTH_WIDTH = 15; // Width of the labyrinth (in nodes)
-    private static final int LABYRINTH_HEIGHT = 10; // Height of the labyrinth (in nodes)
-    private static final Color WALL_COLOR = Color.BLACK;
-    private static final Color NODE_COLOR = Color.WHITE;
-    private static final Color PLAYER_COLOR = Color.BLUE;
+    public static final int NODE_SIZE = 30; // Size of each node (grid cell)
+    public static final int LABYRINTH_WIDTH = 15; // Width of the labyrinth (in nodes)
+    public static final int LABYRINTH_HEIGHT = 10; // Height of the labyrinth (in nodes)
 
     public Node[][] labyrinth;
     private Set<Node> walls;
-    public Node playerNode;
-    private StringBuilder currentWord;
-    private Set<String> validWords = new HashSet<>();
+    public StringBuilder currentWord;
+    public Set<String> validWords = new HashSet<>();
     private Node startPoint;
     private Node endPoint;
     GamePanel gp;
     KeyHandler keyHandler=new KeyHandler();
     private Map<Node, List<Node>> graph; // Graph representation of labyrinth
-    private int score;
+    public int score;
     public Player player;
+    private BufferedImage undoIcon;
+    private BufferedImage hintIcon;
+    private BufferedImage scoreIcon;
+
+    private final Rectangle undoButtonBounds;
+    private final Rectangle hintButtonBounds;
 
 
 
@@ -34,6 +37,19 @@ public class Labyrinth  {
         // Initialize the labyrinth and walls
         this.gp=gp;
 
+        // Load icons
+        try {
+            undoIcon = ImageIO.read(getClass().getResourceAsStream("/assets/Menu/Replay_BTN.png")); // Replace with your undo icon path
+            hintIcon = ImageIO.read(getClass().getResourceAsStream("/assets/Menu/Upgrade_BTN.png")); // Replace with your hint icon path
+            scoreIcon = ImageIO.read(getClass().getResourceAsStream("/assets/Menu/Score.png")); // Replace with your hint icon path
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Define bounds for buttons
+        undoButtonBounds = new Rectangle(gp.getWidth() - 100, 20, 40, 40); // Adjust position/size as needed
+        hintButtonBounds = new Rectangle(gp.getWidth() - 100, 20, 40, 40);
         labyrinth = new Node[LABYRINTH_HEIGHT][LABYRINTH_WIDTH];
         graph = new HashMap<>();
         this.walls = new HashSet<>();
@@ -47,12 +63,12 @@ public class Labyrinth  {
         // Initialize the start and end points
         startPoint = labyrinth[1][1];
         endPoint = labyrinth[LABYRINTH_HEIGHT - 2][LABYRINTH_WIDTH - 2];
-        playerNode = startPoint;
+        //playerNode = startPoint;
         buildGraph(); // Build graph for BFS
 
         // Add KeyListener for player movement
         player = new Player(this.gp,this.keyHandler,this);
-        player.playerNode=startPoint;
+        //player.playerNode=startPoint;
         gp.addKeyListener(this.keyHandler);  // Add the KeyHandler to the GamePanel
 
 
@@ -106,7 +122,16 @@ public class Labyrinth  {
                 if (current.value != '#') {
                     graph.putIfAbsent(current, new ArrayList<>());
 
-                    for (int[] direction : new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}) {
+                    for (int[] direction : new int[][]{
+                            {-1, 0},   // Up
+                            {1, 0},    // Down
+                            {0, -1},   // Left
+                            {0, 1},    // Right
+                            {-1, -1},  // Up-Left (Diagonal)
+                            {-1, 1},   // Up-Right (Diagonal)
+                            {1, -1},   // Down-Left (Diagonal)
+                            {1, 1}     // Down-Right (Diagonal)
+                    }){
                         int newRow = row + direction[0];
                         int newCol = col + direction[1];
                         if (isWithinBounds(newRow, newCol) && labyrinth[newRow][newCol].value != '#') {
@@ -118,7 +143,7 @@ public class Labyrinth  {
         }
 
     }
-    private boolean isWithinBounds(int row, int col) {
+    public boolean isWithinBounds(int row, int col) {
         return row >= 0 && row < LABYRINTH_HEIGHT && col >= 0 && col < LABYRINTH_WIDTH;
     }
     public void drawLabyrinth(Graphics2D g) {
@@ -136,14 +161,14 @@ public class Labyrinth  {
                 if (node.value == '#') {
                     g.setColor(Color.BLACK);
                     //gp.tileM.setTile(g,x,y);
-                    gp.tileM.draw(g);
+                   // gp.tileM.draw(g);
                     //g.drawImage(ImageIO.read(getClass().getResourceAsStream("/assets/tile_0007.png")));
                 } else if (node.equals(startPoint)) {
                     g.setColor(Color.GREEN); // Start point
                 } else if (node.equals(endPoint)) {
                     g.setColor(Color.RED); // End point
                 } else {
-                    g.setColor(Color.WHITE);
+                    g.setColor(node.color);
                 }
                 g.fillRect(x, y, NODE_SIZE, NODE_SIZE);
 
@@ -157,47 +182,48 @@ public class Labyrinth  {
             }
         }
 
-        int playerX = offsetX + player.playerNode.col * NODE_SIZE;
-        int playerY = offsetY + player.playerNode.row * NODE_SIZE;
-
-       // g.setColor(PLAYER_COLOR);
-       // g.fillOval(playerX, playerY, NODE_SIZE, NODE_SIZE);
-        //player.setDefaultValues(playerX,playerY);
         player.draw(g);
 
         // Display the current word
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 20));
-        g.drawString("Current Word: " + currentWord, 20, 30);
+
+        g.drawString("Current Word: " + currentWord, 20, 550);
         g.setColor(Color.WHITE);
 
 
         // Display the score
-        g.drawString("Score: " + score, 20, 60);
-    }
+        g.setFont(new Font("Arial", Font.BOLD, 40));
+        g.drawString(""+ score, 160, 40);
+       g.drawImage(scoreIcon, 20, 10, undoButtonBounds.width*3, 35, null);
 
-    public void movePlayer(int dx, int dy) {
-        int newRow = player.playerNode.row + dx;
-        int newCol = player.playerNode.col + dy;
 
-        if (isWithinBounds(newRow, newCol) && labyrinth[newRow][newCol].value != '#') {
-            player.playerNode = labyrinth[newRow][newCol];
-            currentWord.append(String.valueOf(playerNode.value));
-            gp.repaint();
+        if (undoIcon != null) {
+            g.drawImage(undoIcon, 700, 10, undoButtonBounds.width, undoButtonBounds.height, null);
+        }
+
+        // Draw Hint button
+        if (hintIcon != null) {
+            g.drawImage(hintIcon, 650, 10, hintButtonBounds.width, hintButtonBounds.height, null);
         }
     }
 
 
 
-    private void finalizeWord() {
+
+
+    public void finalizeWord() {
         if (validWords.contains(currentWord.toString())) {
-            System.out.println("Word accepted: " + currentWord);
+            //System.out.println("Word accepted: " + currentWord);
+            this.score+=10;
         } else {
-            System.out.println("Word not valid: " + currentWord);
+            this.score+=0;
+            //System.out.println("Word not valid: " + currentWord);
         }
-        currentWord.setLength(0); // Clear the current word
+        //currentWord.setLength(0); // Clear the current word
         gp.repaint();
     }
+
 
 
 }

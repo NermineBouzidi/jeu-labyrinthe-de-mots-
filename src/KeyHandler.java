@@ -2,7 +2,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
-    public boolean upPressed, downPressed, rightPressed, leftPressed;
+    public boolean upPressed, downPressed, rightPressed, leftPressed,upRightPressed,upLeftPressed,downRightPressed,downLeftPressed;
    // private Labyrinth labyrinth;  // Reference to the Labyrinth class
    /* public KeyHandler(Labyrinth labyrinth) {
         this.labyrinth = labyrinth;
@@ -51,23 +51,27 @@ public class KeyHandler implements KeyListener {
                 upPressed = true;
                 break;
             case KeyEvent.VK_NUMPAD9:
-                upPressed = true;
-                rightPressed = true;
+               // upPressed = true;
+               // rightPressed = true;
+                upRightPressed=true;
                 break;
             case KeyEvent.VK_NUMPAD7:
-                upPressed = true;
-                leftPressed = true;
+               // upPressed = true;
+              //  leftPressed = true;
+                upLeftPressed=true;
                 break;
             case KeyEvent.VK_NUMPAD2:
                 downPressed = true;
                 break;
             case KeyEvent.VK_NUMPAD3:
-                downPressed = true;
-                rightPressed = true;
+                //downPressed = true;
+                //rightPressed = true;
+                downRightPressed=true;
                 break;
             case KeyEvent.VK_NUMPAD1:
-                downPressed = true;
-                leftPressed = true;
+                //downPressed = true;
+                //leftPressed = true;
+                downLeftPressed=true;
                 break;
             case KeyEvent.VK_NUMPAD6:
                 rightPressed = true;
@@ -87,23 +91,23 @@ public class KeyHandler implements KeyListener {
                 upPressed = false;
                 break;
             case KeyEvent.VK_NUMPAD9:
-                upPressed = false;
-                rightPressed = false;
+               upRightPressed=false;
                 break;
             case KeyEvent.VK_NUMPAD7:
-                upPressed = false;
-                leftPressed = false;
+                upLeftPressed=false;
                 break;
             case KeyEvent.VK_NUMPAD2:
                 downPressed = false;
                 break;
             case KeyEvent.VK_NUMPAD3:
-                downPressed = false;
-                rightPressed = false;
+                //downPressed = false;
+                //rightPressed = false;
+                downRightPressed=false;
                 break;
             case KeyEvent.VK_NUMPAD1:
-                downPressed = false;
-                leftPressed = false;
+               // downPressed = false;
+              //  leftPressed = false;
+                downLeftPressed=false;
                 break;
             case KeyEvent.VK_NUMPAD6:
                 rightPressed = false;

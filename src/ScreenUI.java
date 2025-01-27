@@ -175,6 +175,7 @@ public class ScreenUI {
                 if (e.getX() >= startX && e.getX() <= startX + buttonWidth &&
                         e.getY() >= startY && e.getY() <= startY + buttonHeight) {
                     gp.setCurrentState(GameState.DIFFICULTY_SELECTION);  // Change game state
+                   // gp.playSE(1);
                 }
             }
         });

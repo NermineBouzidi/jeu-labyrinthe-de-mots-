@@ -10,7 +10,7 @@ public class Sound {
     public Sound(){
         soundURL[0]=getClass().getResource("/assets/sounds/Apply.wav");
         soundURL[1]=getClass().getResource("/assets/sounds/gamestart.wav");
-        soundURL[2]=getClass().getResource("/assets/sounds/Apply.wav");
+        soundURL[2]=getClass().getResource("/assets/sounds/Cursed.wav");
         soundURL[3]=getClass().getResource("/assets/sounds/Apply.wav");
         soundURL[4]=getClass().getResource("/assets/sounds/Apply.wav");
 
